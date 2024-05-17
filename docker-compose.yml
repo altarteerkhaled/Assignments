@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysqldb:
+    image: mysql:latest
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: kal0201
+      MYSQL_DATABASE: fx_deals
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "--password=kal0201"]
+    volumes:
+      - my-db:/var/lib/mysql
+
+  fx_deal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fx_deal
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    ports:
+      - "9500:9500"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/fx_deals
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: kal0201
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+    volumes:
+      - ./logs:/logs
+
+volumes:
+  my-db:
