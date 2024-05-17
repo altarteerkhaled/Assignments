@@ -41,7 +41,7 @@ public class DealController {
 
         Errors validationResult = validationService.validateFxDeal(deal);
 
-        // If there are validation errors, return 402 Payment Required status code
+        
         if (validationResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder("Validation failed: ");
             for (FieldError error : validationResult.getFieldErrors()) {
@@ -51,7 +51,7 @@ public class DealController {
             return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(errorMessage.toString());
         }
 
-        // Save the deal if validation passes
+        
         try {
             dealService.save(deal);
             logger.info("Deal processed successfully: {}", deal);
